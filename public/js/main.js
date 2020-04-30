@@ -125,8 +125,8 @@ function createOffer() {
 
   document.getElementById("localVideo").srcObject = mediaStream;
 
-  $('#callButton').hide()
-  $('#endCallButton').show()
+  // $('#callButton').hide()
+  // $('#endCallButton').show()
 
   pc.createOffer(gotLocalDescription, 
     function(error) { console.log(error) }, 
@@ -142,8 +142,8 @@ function createAnswer() {
 
   console.log("creating offer", pc)
 
-  $('#callButton').hide()
-  $('#endCallButton').show()
+  // $('#callButton').hide()
+  // $('#endCallButton').show()
 
   pc.createAnswer(gotLocalDescription,
     function(error) { console.log(error) }, 
@@ -167,8 +167,8 @@ function handleCloseCall(){
   document.getElementById("localVideo").srcObject = undefined;
   document.getElementById("remoteVideo").srcObject = undefined;
 
-  $('#callButton').show()
-  $('#endCallButton').hide()
+  // $('#callButton').show()
+  // $('#endCallButton').hide()
 
 }
 
