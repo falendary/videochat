@@ -3,6 +3,42 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
+app.use(function(req, res, next) {
+
+	var authorization = req.headers['authorization'];
+    console.log("Authorization Header is: ", authorization);
+
+    if(!authorization) { 
+
+        res.statusCode = 401;
+        res.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
+
+        res.end('<html><body>Login required</body></html>');
+
+    } else {   
+
+        var pieces = authorization.split(' ');   // eg "Basic Y2hhcmxlczoxMjM0NQ==" we are loking for the 2nd part
+
+        var buf = new Buffer(pieces[1], 'base64'); // create a buffer and tell it the data coming in is base64
+        var decoded_auth = buf.toString();        // read it back out as a string
+
+        console.log("Decoded Authorization ", decoded_auth);
+
+        var credentials = decoded_auth.split(':');   // eg "username:password" split on a ':'
+        var username = credentials[0];
+        var password = credentials[1];
+
+        if( username === 'user' && password === '666666') {
+            return next()
+        } else {
+            res.statusCode = 401; // Force them to retry authentication
+            res.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
+            res.end('<html><body>Access Denied</body></html>');
+        }
+    }
+
+})
+
 // Set public folder as root
 app.use(express.static('public'));
 
