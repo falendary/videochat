@@ -1,21 +1,25 @@
 const express = require('express');
+const https = require('https');
+const fs = require('fs');
+const io = require('socket.io')
+
+const credentials = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
 
 const app = express();
-const port = 80;
+const port = 8080;
+const secure_port = 8433
 
-// Set public folder as root
 app.use(express.static('public'));
-
-// Redirect all traffic to index.html
 app.use((req, res) => res.sendFile(`${__dirname}/public/index.html`));
 
+var https_app = https.createServer(app, credentials);
 
+var io_app = io.listen(https_app);
 
-var http = require('http').createServer(app);
-
-var io = require('socket.io').listen(http);
-
-io.sockets.on('connection', function (socket) {
+io_app.sockets.on('connection', function (socket) {
 
 	socket.on('message', function (message) {
 		console.log('Got message: ', message);
@@ -49,7 +53,6 @@ io.sockets.on('connection', function (socket) {
 });
 
 
-
-http.listen(port, () => {
-  console.info('listening on %d', port);
+https_app.listen(secure_port, () => {
+  console.info('listening on %d', secure_port);
 });
