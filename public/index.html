@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="description" content="WebRTC code samples">
+    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+
+    <title>Videocall</title>
+
+    <style>
+
+        body {
+            margin: 0;
+        }
+
+        video {
+            width: 100%;
+        }
+
+        .container {
+            position: relative;
+        }
+
+        #localVideo {
+            position: absolute;
+            width: 20%;
+            left: 10px;
+            top: 10px;
+            z-index: 2
+        }
+
+        #remoteVideo {
+            width: 100%;
+            min-height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        #callButton {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            font-size: 20px;
+            padding: 10px;
+            width: 200px;
+            margin-left: -100px;
+        }
+
+        #toggleMicro {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            font-size: 20px;
+            padding: 10px;
+            width: 200px;
+            margin-left: 200px;
+        }
+        
+        
+
+
+   
+    </style>
+
+</head>
+
+<body>
+<div>
+
+    <video id="localVideo" playsinline autoplay></video>
+    <video id="remoteVideo" playsinline autoplay></video>
+    <button id="callButton" onclick="createOffer()">✆ ПОЗВОНИТЬ</button>
+    <button id="toggleMicro" onclick="toggleMicro()">Mute</button>
+
+</div>
+
+<script src="js/adapter-latest.js"></script>
+<script src="js/socket.io.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/main.js" async></script>
+
+</body>
+</html>
