@@ -142,6 +142,9 @@ function createAnswer() {
 
   console.log("creating offer", pc)
 
+  $('#callButton').hide()
+  $('#endCallButton').show()
+
   pc.createAnswer(gotLocalDescription,
     function(error) { console.log(error) }, 
     { 'mandatory': { 'OfferToReceiveAudio': true, 'OfferToReceiveVideo': true } }
@@ -178,9 +181,6 @@ function endCall() {
   handleCloseCall();
 
 }
-
-
-
 
 function init() {
 
