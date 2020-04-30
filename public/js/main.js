@@ -5,6 +5,54 @@ navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || 
 
 var pc; // PeerConnection
 var mediaStream;
+var socket;
+
+function sendMessage(message){
+
+  console.log('send message', message);
+
+  socket.emit('message', message);
+}
+
+function initWebscokets() {
+
+  socket = io.connect('', {port: 3000});
+
+  socket.on('message', function (message){
+
+    console.log('on message', message);
+
+    if (message.type === 'offer') {
+      pc.setRemoteDescription(new SessionDescription(message));
+      createAnswer();
+    } 
+
+    else if (message.type === 'answer') {
+      pc.setRemoteDescription(new SessionDescription(message));
+    } 
+
+    else if (message.type === 'candidate') {
+      var candidate = new IceCandidate({sdpMLineIndex: message.label, candidate: message.candidate});
+      pc.addIceCandidate(candidate);
+    }
+
+    else if (message.type === 'close') {
+      pc.close();
+
+      handleCloseCall();
+    } 
+
+
+  });
+
+
+  socket.on('log', function (message){
+
+    console.log('log', message);
+
+  });
+
+}
 
 
 // Step 1. getUserMedia
@@ -40,8 +88,6 @@ function gotStream(stream) {
 
   console.log('gotStream', stream);
 
-  document.getElementById("localVideo").srcObject = stream;
-
   pc = new PeerConnection(null);
   pc.addStream(stream);
   pc.onicecandidate = gotIceCandidate;
@@ -51,13 +97,25 @@ function gotStream(stream) {
 
 function gotLocalDescription(description){
 
+  console.log('gotLocalDescription.description', description);
+
   pc.setLocalDescription(description);
   sendMessage(description);
 
 }
 
 function toggleMicro() {
+
   mediaStream.getAudioTracks()[0].enabled = !mediaStream.getAudioTracks()[0].enabled;
+
+  console.log('toggleMicro', mediaStream.getAudioTracks()[0].enabled)
+
+  if (mediaStream.getAudioTracks()[0].enabled) {
+    $('#toggleMicro').html('Выключить Микрофон')
+  } else {
+    $('#toggleMicro').html('Включить Микрофон')
+  }
+
 }
 
 // Step 2. createOffer
@@ -65,8 +123,12 @@ function createOffer() {
 
   console.log("creating offer", pc)
 
-  pc.createOffer(
-    gotLocalDescription, 
+  document.getElementById("localVideo").srcObject = mediaStream;
+
+  $('#callButton').hide()
+  $('#endCallButton').show()
+
+  pc.createOffer(gotLocalDescription, 
     function(error) { console.log(error) }, 
     { 'mandatory': { 'OfferToReceiveAudio': true, 'OfferToReceiveVideo': true } }
   );
@@ -80,48 +142,56 @@ function createAnswer() {
 
   console.log("creating offer", pc)
 
-  pc.createAnswer(
-    gotLocalDescription,
+  pc.createAnswer(gotLocalDescription,
     function(error) { console.log(error) }, 
     { 'mandatory': { 'OfferToReceiveAudio': true, 'OfferToReceiveVideo': true } }
   );
+
 }
+
+function handleCloseCall(){
+
+  var tracks = mediaStream.getTracks()
+
+  tracks.forEach(function(track) {
+
+    track.stop();
+
+  })
+
+  mediaStream = undefined
+
+  document.getElementById("localVideo").srcObject = undefined;
+  document.getElementById("remoteVideo").srcObject = undefined;
+
+  $('#callButton').show()
+  $('#endCallButton').hide()
+
+}
+
+function endCall() {
+
+  sendMessage({type: 'close'})
+
+  pc.close();
+
+  handleCloseCall();
+
+}
+
+
+
+
+function init() {
+
+  initWebscokets();
+
+}
+
+init();
 
 
 ////////////////////////////////////////////////
 // Socket.io
 
-var socket = io.connect('', {port: 3000});
 
-function sendMessage(message){
-
-   console.log('send message', message);
-
-  socket.emit('message', message);
-}
-
-socket.on('message', function (message){
-
-  console.log('on message', message);
-
-  if (message.type === 'offer') {
-    pc.setRemoteDescription(new SessionDescription(message));
-    createAnswer();
-  } 
-
-  else if (message.type === 'answer') {
-    pc.setRemoteDescription(new SessionDescription(message));
-  } 
-
-  else if (message.type === 'candidate') {
-    var candidate = new IceCandidate({sdpMLineIndex: message.label, candidate: message.candidate});
-    pc.addIceCandidate(candidate);
-  }
-});
-
-
-socket.on('log', function (message){
-
-  console.log('log', message);
-
-});

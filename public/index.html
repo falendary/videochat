@@ -3,10 +3,10 @@
 <head>
 
     <meta charset="utf-8">
-    <meta name="description" content="WebRTC code samples">
+    <meta name="description" content="Simple Videochat">
     <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
 
-    <title>Videocall</title>
+    <title>Videochat</title>
 
     <style>
 
@@ -46,6 +46,18 @@
             padding: 10px;
             width: 200px;
             margin-left: -100px;
+            text-transform: uppercase;
+        }
+        #endCallButton {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            font-size: 20px;
+            padding: 10px;
+            width: 200px;
+            margin-left: -100px;
+            text-transform: uppercase;
         }
 
         #toggleMicro {
@@ -54,10 +66,15 @@
             left: 50%;
             font-size: 20px;
             padding: 10px;
-            width: 200px;
+            width: 300px;
             margin-left: 200px;
+            text-transform: uppercase;
         }
         
+        button {
+            background: #fff;
+            border: 1px solid #000;
+        }
         
 
 
@@ -69,10 +86,17 @@
 <body>
 <div>
 
-    <video id="localVideo" playsinline autoplay muted="muted"></video>
-    <video id="remoteVideo" playsinline autoplay></video>
-    <button id="callButton" onclick="createOffer()">✆ ПОЗВОНИТЬ</button>
-    <button id="toggleMicro" onclick="toggleMicro()">Mute</button>
+    <div class="local-video-holder">
+        <video id="localVideo" playsinline autoplay muted="muted"></video>
+    </div>
+
+    <div class="remote-video-holder">
+        <video id="remoteVideo" playsinline autoplay></video>
+    </div>
+
+    <button id="callButton" onclick="createOffer()">✆ Позвонить</button>
+    <button id="endCallButton" onclick="endCall()">Отключиться</button>
+    <button id="toggleMicro" onclick="toggleMicro()">Выключить микрофон</button>
 
 </div>
 
