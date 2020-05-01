@@ -1,8 +1,3 @@
-var PeerConnection = window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
-var SessionDescription = window.mozRTCSessionDescription || window.RTCSessionDescription;
-navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
-
 var pc; // PeerConnection
 var mediaStream;
 var socket;
@@ -23,16 +18,16 @@ function initWebscokets() {
     console.log('on message', message);
 
     if (message.type === 'offer') {
-      pc.setRemoteDescription(new SessionDescription(message));
+      pc.setRemoteDescription(new RTCSessionDescription(message));
       createAnswer();
     } 
 
     else if (message.type === 'answer') {
-      pc.setRemoteDescription(new SessionDescription(message));
+      pc.setRemoteDescription(new RTCSessionDescription(message));
     } 
 
     else if (message.type === 'candidate') {
-      var candidate = new IceCandidate({sdpMLineIndex: message.label, candidate: message.candidate});
+      var candidate = new RTCIceCandidate({sdpMLineIndex: message.label, candidate: message.candidate});
       pc.addIceCandidate(candidate);
     }
 
@@ -54,15 +49,15 @@ function initWebscokets() {
 
 }
 
-
-// Step 1. getUserMedia
-navigator.getUserMedia(
+navigator.mediaDevices.getUserMedia(
   { audio: true, video: true }, 
-  gotStream, 
-  function(error) { console.log(error) }
-);
+).then(function(stream){
+  gotStream(stream)
+})
 
 function gotIceCandidate(event){
+
+  console.log('gotIceCandidate.event', event);
 
   if (event.candidate) {
     sendMessage({
@@ -88,7 +83,9 @@ function gotStream(stream) {
 
   console.log('gotStream', stream);
 
-  pc = new PeerConnection(null);
+  pc = new RTCPeerConnection({
+    iceServers: [{urls: "stun:chat.szch.one:3478", username: 'prouser', credential: '123456'}]
+  });
   pc.addStream(stream);
   pc.onicecandidate = gotIceCandidate;
   pc.onaddstream = gotRemoteStream;
