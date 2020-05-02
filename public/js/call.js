@@ -36,7 +36,6 @@ function initWebscokets() {
     console.log('on room_message type', message.type);
     console.log('on room_message ', message);
 
-
     if (message.type === 'offer') {
       pc.setRemoteDescription(new RTCSessionDescription(message));
       createAnswer();
@@ -153,8 +152,6 @@ function startCall(){
     localVideo.srcObject = mediaStream;
 
     createOffer();
-
-    toggleMicro(); // remove later
 
   })
   
