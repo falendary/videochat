@@ -3,6 +3,8 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
+
+
 app.use(function(req, res, next) {
 
 	var authorization = req.headers['authorization'];
@@ -69,6 +71,14 @@ io.sockets.on('connection', function (socket) {
 
 		}
 		
+		if (message.type === 'refresh') {
+
+			rooms[message.data.room.room_hash].modified_at = new Date();
+
+			destroyBrokenRooms();
+
+		}
+
 		socket.broadcast.emit('room_message', message);
 	});
 
@@ -92,7 +102,8 @@ io.sockets.on('connection', function (socket) {
 				members_limit: 2,
 				members: 1,
 				room_hash: hash,
-				created_at: new Date()
+				created_at: new Date(),
+				modified_at: new Date()
 			}
 
 			rooms[hash] = room
@@ -133,6 +144,22 @@ io.sockets.on('connection', function (socket) {
 	// 	socket.broadcast.emit('broadcast(): client ' + socket.id + ' joined room ' + room);
 	// });
 });
+
+function destroyBrokenRooms(){
+
+	Object.keys(rooms).forEach(function(key){
+
+		var room = rooms[key]
+
+		var two_minutes = 2 * 60 * 1000;
+
+		if (new Date() - room.modified_at > two_minutes) {
+			delete rooms[key];
+		}
+
+	})
+
+}
 
 
 

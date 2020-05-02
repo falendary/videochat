@@ -189,6 +189,19 @@ function init() {
       toggleMicro();
     })
 
+    setInterval(function(){
+
+      sendMessage({
+        type: 'refresh',
+        data: {
+          room: {
+            room_hash: roomHash
+          }
+        }
+      })
+
+    }, 60 * 1000)
+
    } else {
 
     location.href = '/'

@@ -1,6 +1,13 @@
+html {
+    width: 100%;
+    height: 100%;
+}
+
 body {
     margin: 0;
     font-family: sans-serif;
+    width: 100%;
+    height: 100%;
 }
 
 * {
@@ -19,7 +26,15 @@ video {
 .container {
     position: relative;
     margin: 0 auto;
-    width: 980px;
+    width: 100%;
+}
+
+@media screen and (min-width: 980px) {
+    .container {
+        position: relative;
+        margin: 0 auto;
+        width: 980px;
+    }
 }
 
 .local-video {
@@ -67,12 +82,19 @@ video {
 
 .toggle-micro-button {
     position: absolute;
-    bottom: 20px;
-    left: 50%;
+    bottom: 80px;
     padding: 10px;
     width: 300px;
-    margin-left: 150px;
+    margin-left: -150px;
+    left: 50%;
     
+}
+
+@media screen (min-width: 600px) {
+    .toggle-micro-button {
+        bottom: 20px;
+        margin-left: 150px;
+    }
 }
 
 .button {
@@ -102,16 +124,16 @@ video {
 
 .join-room-button {
     text-decoration: none;
-    font-size: 16px;
+    font-size: 12px;
     display: block;
-    padding: 16px;
+    padding: 10px;
     border: 1px solid #000;
     color: #000;
     text-align: center;
     text-transform: uppercase;
-    width: 200px;
     cursor: pointer;
-    height: 48px;
+    height: 36px;
+    max-width: 200px;
 }
 
 .join-room-button:hover {

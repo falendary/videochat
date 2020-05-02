@@ -20,7 +20,7 @@ function initWebscokets() {
 
         var rooms_result_html = '';
 
-        rooms_result_html = '<div class="rooms-table-head"><div class="width-50 p-8">Room Name</div><div class="width-20 p-8">Members</div><div class="width-30 p-8"></div></div>'
+        rooms_result_html = '<div class="rooms-table-head"><div class="width-20 p-8">Комната</div><div class="width-20 p-8">Мест</div><div class="width-60 p-8"></div></div>'
 
         var rooms_rows = [];
 
@@ -32,11 +32,11 @@ function initWebscokets() {
 
           var room = rooms[key];
 
-          row = row + '<div class="width-50 p-8">' + room.room_hash + '</div>'
+          row = row + '<div class="width-20 p-8">' + room.room_hash + '</div>'
 
           row = row + '<div class="width-20 p-8">' + room.members + '/' + room.members_limit + '</div>'
 
-          row = row + '<div class="width-30 p-8"><a class="join-room-button" href="/call.html#room='+room.room_hash+'">Присоединиться</button></a>'
+          row = row + '<div class="width-60 p-8"><a class="join-room-button" href="/call.html#room='+room.room_hash+'">Присоединиться</button></a></div>'
 
           row = row + '</div>';
 
