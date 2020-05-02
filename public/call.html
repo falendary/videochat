@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="description" content="Simple Videochat">
+    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+
+    <title>Videochat</title>
+
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+
+</head>
+
+<body>
+<div>
+
+    <div class="local-video-holder">
+        <video id="localVideo" class="local-video" playsinline autoplay muted="muted"></video>
+    </div>
+
+    <div class="remote-video-holder">
+        <video id="remoteVideo" class="remote-video" playsinline autoplay></video>
+    </div>
+
+    <button id="endCallButton" class="button end-call-button">Отключиться</button>
+    <button id="toggleMicro" class="button toggle-micro-button">Выключить микрофон</button>
+
+</div>
+
+<script src="js/adapter-latest.js"></script>
+<script src="js/socket.io.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/call.js" async></script>
+
+</body>
+</html>

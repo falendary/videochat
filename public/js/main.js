@@ -1,194 +1,98 @@
-var pc; // PeerConnection
-var mediaStream;
-var socket;
 
-function sendMessage(message){
-
-  console.log('send message', message);
-
-  socket.emit('message', message);
-}
+var roomsHolder = document.getElementById('roomsHolder');
+var createRoomButton = document.getElementById('createRoomButton');
 
 function initWebscokets() {
 
+  console.log('initWebscokets');
+
   socket = io.connect('', {port: 3000});
 
-  socket.on('message', function (message){
+  socket.on('lobby_message', function (message){
 
-    console.log('on message', message);
+    console.log('message', message);
 
-    if (message.type === 'offer') {
-      pc.setRemoteDescription(new RTCSessionDescription(message));
-      createAnswer();
-    } 
+    if (message.type === 'get_rooms_response') {
 
-    else if (message.type === 'answer') {
-      pc.setRemoteDescription(new RTCSessionDescription(message));
-    } 
+      var rooms = message.data.rooms;
 
-    else if (message.type === 'candidate') {
-      var candidate = new RTCIceCandidate({sdpMLineIndex: message.label, candidate: message.candidate});
-      pc.addIceCandidate(candidate);
+      if (Object.keys(rooms).length) {
+
+        var rooms_result_html = '';
+
+        rooms_result_html = '<div class="rooms-table-head"><div class="width-50 p-8">Room Name</div><div class="width-20 p-8">Members</div><div class="width-30 p-8"></div></div>'
+
+        var rooms_rows = [];
+
+        rooms_result_html = rooms_result_html + '<div class="rooms-table-body">'
+
+        Object.keys(rooms).forEach(function(key) {
+
+          var row = '<div class="rooms-table-row">';
+
+          var room = rooms[key];
+
+          row = row + '<div class="width-50 p-8">' + room.room_hash + '</div>'
+
+          row = row + '<div class="width-20 p-8">' + room.members + '/' + room.members_limit + '</div>'
+
+          row = row + '<div class="width-30 p-8"><a class="join-room-button" href="/call.html#room='+room.room_hash+'">Присоединиться</button></a>'
+
+          row = row + '</div>';
+
+          rooms_rows.push(row);
+
+        })
+
+
+        rooms_result_html = rooms_result_html + rooms_rows.join('')
+
+        rooms_result_html = rooms_result_html + '</div>';
+
+        roomsHolder.innerHTML = rooms_result_html;
+
+      } else {
+
+        roomsHolder.innerHTML = '<p class="text-center">Никто не начал звонка</p>'
+
+      }
+
     }
 
-    else if (message.type === 'close') {
-      pc.close();
+    if (message.type === 'create_room_response') {
 
-      handleCloseCall();
-    } 
+        location.href = '/call.html#room=' + message.data.room.room_hash;
 
+    }
 
-  });
-
-
-  socket.on('log', function (message){
-
-    console.log('log', message);
-
-  });
-
-}
-
-navigator.mediaDevices.getUserMedia(
-  { audio: true, video: true }, 
-).then(function(stream){
-  gotStream(stream)
-})
-
-function gotIceCandidate(event){
-
-  console.log('gotIceCandidate.event', event);
-
-  if (event.candidate) {
-    sendMessage({
-      type: 'candidate',
-      label: event.candidate.sdpMLineIndex,
-      id: event.candidate.sdpMid,
-      candidate: event.candidate.candidate
-    });
-  }
-
-}
-
-function gotRemoteStream(event){
-  document.getElementById("remoteVideo").srcObject = event.stream
-}
+    if (message.type === 'room_created_signal') {
+      socket.emit('lobby_message', {
+        action: 'get_rooms_request'
+      });
+    }
 
 
-function gotStream(stream) {
-
-  mediaStream = stream;
-
-  // mediaStream.getAudioTracks()[0].enabled = false;
-
-  console.log('gotStream', stream);
-
-  pc = new RTCPeerConnection({
-    iceServers: [{urls: "stun:chat.szch.one:3478", username: 'prouser', credential: '123456'}]
-  });
-  pc.addStream(stream);
-  pc.onicecandidate = gotIceCandidate;
-  pc.onaddstream = gotRemoteStream;
-}
-
-
-function gotLocalDescription(description){
-
-  console.log('gotLocalDescription.description', description);
-
-  pc.setLocalDescription(description);
-  sendMessage(description);
-
-}
-
-function toggleMicro() {
-
-  mediaStream.getAudioTracks()[0].enabled = !mediaStream.getAudioTracks()[0].enabled;
-
-  console.log('toggleMicro', mediaStream.getAudioTracks()[0].enabled)
-
-  if (mediaStream.getAudioTracks()[0].enabled) {
-    $('#toggleMicro').html('Выключить Микрофон')
-  } else {
-    $('#toggleMicro').html('Включить Микрофон')
-  }
-
-}
-
-// Step 2. createOffer
-function createOffer() {
-
-  console.log("creating offer", pc)
-
-  document.getElementById("localVideo").srcObject = mediaStream;
-
-  // $('#callButton').hide()
-  // $('#endCallButton').show()
-
-  pc.createOffer(gotLocalDescription, 
-    function(error) { console.log(error) }, 
-    { 'mandatory': { 'OfferToReceiveAudio': true, 'OfferToReceiveVideo': true } }
-  );
-
-
-}
-
-
-// Step 3. createAnswer
-function createAnswer() {
-
-  console.log("creating offer", pc)
-
-  // $('#callButton').hide()
-  // $('#endCallButton').show()
-
-  pc.createAnswer(gotLocalDescription,
-    function(error) { console.log(error) }, 
-    { 'mandatory': { 'OfferToReceiveAudio': true, 'OfferToReceiveVideo': true } }
-  );
-
-}
-
-function handleCloseCall(){
-
-  var tracks = mediaStream.getTracks()
-
-  tracks.forEach(function(track) {
-
-    track.stop();
 
   })
 
-  mediaStream = undefined
-
-  document.getElementById("localVideo").srcObject = undefined;
-  document.getElementById("remoteVideo").srcObject = undefined;
-
-  // $('#callButton').show()
-  // $('#endCallButton').hide()
+  socket.emit('lobby_message', {
+      action: 'get_rooms_request'
+  });
 
 }
 
-function endCall() {
+function init(){
 
-  sendMessage({type: 'close'})
+    initWebscokets();
 
-  pc.close();
+    createRoomButton.addEventListener('click', function(){
 
-  handleCloseCall();
+      socket.emit('lobby_message', {
+        action: 'create_room_request'
+      });
 
-}
-
-function init() {
-
-  initWebscokets();
+    })
 
 }
 
 init();
-
-
-////////////////////////////////////////////////
-// Socket.io
-
-

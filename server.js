@@ -48,18 +48,65 @@ app.use('/scripts', express.static(`${__dirname}/node_modules/`));
 // Redirect all traffic to index.html
 app.use((req, res) => res.sendFile(`${__dirname}/public/index.html`));
 
-
-
 var http = require('http').createServer(app);
 
 var io = require('socket.io').listen(http);
 
+var rooms = {
+
+};
+
 io.sockets.on('connection', function (socket) {
 
-	socket.on('message', function (message) {
-		console.log('Got message: ', message);
-		socket.broadcast.emit('message', message); // should be room only
+	socket.on('room_message', function (message) {
+
+		console.log('room_message.message', message)
+
+		if (message.type === 'close') {
+			delete rooms[message.data.room_hash];
+
+			console.log('rooms', rooms);
+
+		}
+		
+		socket.broadcast.emit('room_message', message);
 	});
+
+	socket.on('lobby_message', function(message){
+
+		console.log('lobby_message.message', message)
+
+		if (message.action === 'get_rooms_request') {
+
+			socket.emit('lobby_message', {type: 'get_rooms_response', data: {
+				rooms: rooms
+			}});
+
+		}
+
+		if (message.action === 'create_room_request') {
+
+			var hash = Math.floor(Math.random() * 0xFFFFFF).toString(16);
+
+			var room = {
+				members_limit: 2,
+				members: 1,
+				room_hash: hash,
+				created_at: new Date()
+			}
+
+			rooms[hash] = room
+
+			socket.emit('lobby_message', {type: 'create_room_response', data: {
+				room: room
+			}});
+
+			socket.broadcast.emit('lobby_message', {type: 'room_created_signal'})
+
+		}
+
+	});
+
 
 	// socket.on('create or join', function (room) {
 	// 	var numClients = io.sockets.clients(room).length;

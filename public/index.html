@@ -8,99 +8,29 @@
 
     <title>Videochat</title>
 
-    <style>
-
-        body {
-            margin: 0;
-        }
-
-        video {
-            width: 100%;
-        }
-
-        .container {
-            position: relative;
-        }
-
-        #localVideo {
-            position: absolute;
-            width: 20%;
-            left: 10px;
-            top: 10px;
-            z-index: 2
-        }
-
-        #remoteVideo {
-            width: 100%;
-            min-height: 100%;
-            position: absolute;
-            left: 0;
-            top: 0;
-        }
-
-        #callButton {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            font-size: 20px;
-            padding: 10px;
-            width: 200px;
-            margin-left: -100px;
-            text-transform: uppercase;
-        }
-        #endCallButton {
-            display: none;
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            font-size: 20px;
-            padding: 10px;
-            width: 200px;
-            margin-left: -100px;
-            text-transform: uppercase;
-        }
-
-        #toggleMicro {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            font-size: 20px;
-            padding: 10px;
-            width: 300px;
-            margin-left: 200px;
-            text-transform: uppercase;
-        }
-        
-        button {
-            background: #fff;
-            border: 1px solid #000;
-        }
-        
-
-
-   
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
 
 </head>
 
 <body>
 <div>
 
-    <div class="local-video-holder">
-        <video id="localVideo" playsinline autoplay muted="muted"></video>
-    </div>
+    <div class="container">
 
-    <div class="remote-video-holder">
-        <video id="remoteVideo" playsinline autoplay></video>
-    </div>
+        <h2 class="text-center text-uppercase app-header">Видеочат</h2>
 
-    <button id="callButton" onclick="createOffer()">✆ Позвонить</button>
-    <!-- <button id="endCallButton" onclick="endCall()">Отключиться</button> -->
-    <button id="toggleMicro" onclick="toggleMicro()">Выключить микрофон</button>
+        <div id="roomsHolder" class="rooms-holder">
+            
+        </div>
+
+        <div>
+            <button id="createRoomButton" class="create-room-button">Создать звонок</button>
+        </div>
+
+    </div>
 
 </div>
 
-<script src="js/adapter-latest.js"></script>
 <script src="js/socket.io.js"></script>
 <script src="js/jquery.min.js"></script>
 <script src="js/main.js" async></script>

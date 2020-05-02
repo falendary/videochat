@@ -1,0 +1,176 @@
+body {
+    margin: 0;
+    font-family: sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+video {
+    width: 100%;
+}
+
+
+.text-center {
+    text-align: center;
+}
+
+.container {
+    position: relative;
+    margin: 0 auto;
+    width: 980px;
+}
+
+.local-video {
+    position: absolute;
+    width: 20%;
+    left: 10px;
+    top: 10px;
+    z-index: 2
+}
+
+.remote-video {
+    width: 100%;
+    min-height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.start-button {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    width: 200px;
+    margin-left: -350px;
+}
+
+.call-button {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    width: 200px;
+    margin-left: -100px;
+    text-transform: uppercase;
+}
+.end-call-button {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    font-size: 20px;
+    padding: 10px;
+    width: 200px;
+    margin-left: -100px;
+    text-transform: uppercase;
+}
+
+.toggle-micro-button {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    padding: 10px;
+    width: 300px;
+    margin-left: 150px;
+    
+}
+
+.button {
+    cursor: pointer;
+    background: #fff;
+    border: 1px solid #000;
+    text-transform: uppercase;
+    font-size: 20px;
+    padding: 10px;
+}
+
+.disabled-button {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.create-room-button {
+    margin: 40px auto;
+    display: block;
+    width: 300px;
+    height: 50px;
+    font-size: 20px;
+    text-transform: uppercase;
+    background: 0;
+    cursor: pointer;
+}
+
+.join-room-button {
+    text-decoration: none;
+    font-size: 16px;
+    display: block;
+    padding: 16px;
+    border: 1px solid #000;
+    color: #000;
+    text-align: center;
+    text-transform: uppercase;
+    width: 200px;
+    cursor: pointer;
+    height: 48px;
+}
+
+.join-room-button:hover {
+    opacity: .7
+}
+
+.create-room-button:hover {
+    opacity: .7;
+}
+
+.width-100 {
+    width: 100%;
+}
+.width-90 {
+    width: 90%;
+}
+.width-80 {
+    width: 80%;
+}
+.width-70 {
+    width: 70%;
+}
+.width-60 {
+    width: 60%;
+}
+.width-50 {
+    width: 50%;
+}
+.width-40 {
+    width: 40%;
+}
+.width-30 {
+    width: 30%;
+}
+.width-20 {
+    width: 20%;
+}
+.width-10 {
+    width: 10%;
+}
+
+.rooms-holder {
+    padding-top: 40px;
+}
+
+.rooms-table-head {
+    display: flex;
+}
+
+.rooms-table-row {
+    display: flex;
+}
+
+.p-8 {
+    padding: 8px;
+}
+.text-uppercase {
+    text-transform: uppercase;
+}
+.app-header {
+    padding-top: 20px;
+}
