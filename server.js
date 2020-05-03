@@ -60,26 +60,83 @@ var rooms = {
 
 io.sockets.on('connection', function (socket) {
 
+	socket.on('webrtc_message', function(message){
+
+		socket.broadcast.emit('webrtc_message', message);
+
+	})
+
 	socket.on('room_message', function (message) {
 
 		console.log('room_message.message', message)
 
-		if (message.type === 'close') {
+		if (message.action === 'close') {
 			delete rooms[message.data.room_hash];
 
 			console.log('rooms', rooms);
 
+			socket.broadcast.emit('room_message', message);
+
 		}
 		
-		if (message.type === 'refresh') {
+		if (message.action === 'refresh') {
 
-			rooms[message.data.room.room_hash].modified_at = new Date();
+			if (message.data) {
 
-			destroyBrokenRooms();
+				if (message.data.room) {
+					if (rooms[message.data.room.room_hash]) {
+
+						rooms[message.data.room.room_hash].modified_at = new Date();
+
+					}
+
+				}
+
+				destroyBrokenRooms();
+
+				socket.broadcast.emit('room_message', message);
+
+			}
 
 		}
 
-		socket.broadcast.emit('room_message', message);
+		if (message.action === 'join_room_request') {
+
+			var room = null;
+
+			if (message.data) {
+
+				room_hash = message.data.room_hash
+				user_hash = message.data.user_hash;
+
+				room = rooms[room_hash]
+
+				if (room) {
+
+					if (room.members.length < 2) {
+
+						room.members.push(user_hash)
+
+					}
+
+				}
+
+				console.log('room', room);
+			
+			}
+
+			message = {
+				action: 'join_room_response',
+				data: {
+					room: room
+				}
+			}
+
+			socket.emit('room_message', message);
+
+		}
+
+		
 	});
 
 	socket.on('lobby_message', function(message){
@@ -100,7 +157,7 @@ io.sockets.on('connection', function (socket) {
 
 			var room = {
 				members_limit: 2,
-				members: 1,
+				members: [message.data.user_hash],
 				room_hash: hash,
 				created_at: new Date(),
 				modified_at: new Date()
@@ -118,31 +175,6 @@ io.sockets.on('connection', function (socket) {
 
 	});
 
-
-	// socket.on('create or join', function (room) {
-	// 	var numClients = io.sockets.clients(room).length;
-
-	// 	console.log('Room ' + room + ' has ' + numClients + ' client(s)');
-	// 	console.log('Request to create or join room', room);
-
-	// 	if(numClients == 0) {
-	// 		socket.join(room);
-	// 		socket.emit('created', room);
-	// 	} 
-
-	// 	else if(numClients == 1) {
-	// 		io.sockets.in(room).emit('join', room);
-	// 		socket.join(room);
-	// 		socket.emit('joined', room);
-	// 	} 
-
-	// 	else { // max two clients
-	// 		socket.emit('full', room);
-	// 	}
-
-	// 	socket.emit('emit(): client ' + socket.id + ' joined room ' + room);
-	// 	socket.broadcast.emit('broadcast(): client ' + socket.id + ' joined room ' + room);
-	// });
 });
 
 function destroyBrokenRooms(){
