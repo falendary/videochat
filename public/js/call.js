@@ -8,6 +8,9 @@ var toggleMicroButton = document.getElementById('toggleMicro');
 var localVideo = document.getElementById('localVideo');
 var remoteVideo = document.getElementById('remoteVideo');
 
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia ||
+navigator.msGetUserMedia;
+
 var roomHash;
 var userHash;
 
@@ -175,55 +178,59 @@ function startCall(isOfferer){
 
   console.log('Requesting local stream');
 
-  navigator.mediaDevices.getUserMedia(
+  navigator.getUserMedia(
     { audio: true, video: true }, 
-  ).then(function(data){
-    
-    mediaStream = data;
+    function onSuccess(data){
 
-    localVideo.srcObject = mediaStream;
+      mediaStream = data;
 
-    pc = new RTCPeerConnection(configuration);
+      localVideo.srcObject = mediaStream;
 
-    pc.addStream(mediaStream);
+      pc = new RTCPeerConnection(configuration);
 
-    pc.onicecandidate = function (event){
+      pc.addStream(mediaStream);
 
-      if (event.candidate) {
-        socket.emit('webrtc_message', {
-          type: 'candidate',
-          label: event.candidate.sdpMLineIndex,
-          id: event.candidate.sdpMid,
-          candidate: event.candidate.candidate
-        });
+      pc.onicecandidate = function (event){
+
+        if (event.candidate) {
+          socket.emit('webrtc_message', {
+            type: 'candidate',
+            label: event.candidate.sdpMLineIndex,
+            id: event.candidate.sdpMid,
+            candidate: event.candidate.candidate
+          });
+        }
+
+      };
+
+      pc.onaddstream = function (event){
+        remoteVideo.srcObject = event.stream
+      };
+
+      if (isOfferer) {
+
+        pc.onnegotiationneeded = function(){
+
+          pc.createOffer().then(function(offer){
+
+            pc.setLocalDescription(offer).then(function(){
+
+              socket.emit('webrtc_message', pc.localDescription);
+
+            })
+
+          }).catch(function(error){
+            console.log('onnegotiationneeded.error', error)
+          });
+
+        }
       }
 
-    };
+  }, function onError(error){
 
-    pc.onaddstream = function (event){
-      remoteVideo.srcObject = event.stream
-    };
+    alert(error);
 
-    if (isOfferer) {
-
-      pc.onnegotiationneeded = function(){
-
-        pc.createOffer().then(function(offer){
-
-          pc.setLocalDescription(offer).then(function(){
-
-            socket.emit('webrtc_message', pc.localDescription);
-
-          })
-
-        }).catch(function(error){
-          console.log('onnegotiationneeded.error', error)
-        });
-
-      }
-    }
-
-    })
+  })
     
 }
 
