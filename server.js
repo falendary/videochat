@@ -115,7 +115,7 @@ io.sockets.on('connection', function (socket) {
 
 					if (room.members.length < 2) {
 
-						if (room.members.index(user_hash) === -1) {
+						if (room.members.indexOf(user_hash) === -1) {
 
 							room.members.push(user_hash);
 
