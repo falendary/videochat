@@ -36,7 +36,13 @@ function initWebscokets() {
         pc.setRemoteDescription(new RTCSessionDescription(message), function(){
 
           if (pc.remoteDescription.type === 'offer') {
-            pc.createAnswer().then(gotLocalDescription).catch(function(error){
+            pc.createAnswer().then(function(answer){
+
+                pc.setLocalDescription(answer).then(function(){
+                  socket.emit('webrtc_message', pc.localDescription);
+                });
+
+            }).catch(function(error){
               console.log('Error', error);
             })
          }
@@ -151,14 +157,6 @@ function initWebscokets() {
 
 }
 
-function gotLocalDescription(description){
-
-  console.log('gotLocalDescription.description', description);
-
-  pc.setLocalDescription(description);
-  socket.emit('webrtc_message', description);
-
-}
 
 function endCall() {
 
@@ -210,7 +208,15 @@ function startCall(isOfferer){
 
       pc.onnegotiationneeded = function(){
 
-        pc.createOffer().then(gotLocalDescription).catch(function(error){
+        pc.createOffer().then(function(offer){
+
+          pc.setLocalDescription(offer).then(function(){
+
+            socket.emit('webrtc_message', pc.localDescription);
+
+          })
+
+        }).catch(function(error){
           console.log('onnegotiationneeded.error', error)
         });
 
