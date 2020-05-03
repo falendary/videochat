@@ -5,10 +5,10 @@ dotenv.config();
 const app = express();
 const port = 3000;
 
-const USER = process.env.USER || 'user';
+const USERNAME = process.env.USERNAME || 'user';
 const PASSWORD = process.env.PASSWORD || '666666';
 
-console.log("Basic Auth User: " + USER)
+console.log("Basic Auth Username: " + USERNAME)
 console.log("Basic Auth Password: " + PASSWORD)
 
 app.use(function(req, res, next) {
@@ -36,7 +36,7 @@ app.use(function(req, res, next) {
         var username = credentials[0];
         var password = credentials[1];
 
-        if( username === USER && password === PASSWORD) {
+        if( username === USERNAME && password === PASSWORD) {
             return next()
         } else {
             res.statusCode = 401; // Force them to retry authentication
