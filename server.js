@@ -137,6 +137,9 @@ io.sockets.on('connection', function (socket) {
 			}
 
 			socket.emit('room_message', message);
+			socket.broadcast.emit('room_message', {
+				type: 'user_joined_room_signal'
+			});
 
 		}
 

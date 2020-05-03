@@ -13,7 +13,11 @@ var userHash;
 
 var configuration = {
   iceServers: [
-    { urls: "stun:chat.szch.one:3478"}
+    { urls: "stun:chat.szch.one:3478"},
+    { urls: 'turn:chat.szch.one:3478',
+      username: 'prouser', 
+      credential: '123456',
+    }
   ]
 }
 
@@ -25,47 +29,50 @@ function initWebscokets() {
 
     console.log('webrtc_message message', message);
 
-    if (message.type === 'offer') {
+    if (pc) {
 
-      pc.setRemoteDescription(new RTCSessionDescription(message), function(){
+      if (message.type === 'offer') {
 
-        if (pc.remoteDescription.type === 'offer') {
-          pc.createAnswer().then(gotLocalDescription).catch(function(error){
-            console.log('Error', error);
-          })
-       }
+        pc.setRemoteDescription(new RTCSessionDescription(message), function(){
 
-      });
-     
-    } 
+          if (pc.remoteDescription.type === 'offer') {
+            pc.createAnswer().then(gotLocalDescription).catch(function(error){
+              console.log('Error', error);
+            })
+         }
 
-    if (message.type === 'answer') {
-      pc.setRemoteDescription(new RTCSessionDescription(message));
-    } 
+        });
+       
+      } 
 
-    if (message.type === 'candidate') {
+      if (message.type === 'answer') {
 
-      var candidate = new RTCIceCandidate({sdpMLineIndex: message.label, candidate: message.candidate});
-        
-      console.log('candidate', candidate);
+        pc.setRemoteDescription(new RTCSessionDescription(message));
 
-      try {
-        if (candidate) {
-          pc.addIceCandidate(candidate);
+      } 
+
+      if (message.type === 'candidate') {
+
+        var candidate = new RTCIceCandidate({sdpMLineIndex: message.label, candidate: message.candidate});
+          
+        console.log('candidate', candidate);
+
+        try {
+          if (candidate) {
+            pc.addIceCandidate(candidate);
+          }
+        } catch  (err) {
+            console.log("err", err);
         }
-      } catch  (err) {
-          console.log("err", err);
+
       }
 
     }
-
-
 
   })
 
   socket.on('room_message', function (message){
 
-    console.log('on room_message type', message.type);
     console.log('on room_message ', message);
 
     if (message.action === 'close') {
@@ -99,8 +106,6 @@ function initWebscokets() {
         if (message.data.room.members.length === 2) {
 
           isOfferer = true;
-
-          
 
           console.log("Offerer")
 
@@ -137,28 +142,14 @@ function initWebscokets() {
 
     }
 
+    if (message.action === 'user_joined_room_signal') {
+
+    }
+
 
   });
 
 }
-
-function gotIceCandidate(event){
-
-  if (event.candidate) {
-    socket.emit('webrtc_message', {
-      type: 'candidate',
-      label: event.candidate.sdpMLineIndex,
-      id: event.candidate.sdpMid,
-      candidate: event.candidate.candidate
-    });
-  }
-
-}
-
-function gotRemoteStream(event){
-  remoteVideo.srcObject = event.stream
-}
-
 
 function gotLocalDescription(description){
 
@@ -166,29 +157,6 @@ function gotLocalDescription(description){
 
   pc.setLocalDescription(description);
   socket.emit('webrtc_message', description);
-
-}
-
-function createOffer(isOfferer) {
-
-  pc = new RTCPeerConnection(configuration);
-
-  pc.addStream(mediaStream);
-  pc.onicecandidate = gotIceCandidate;
-  pc.onaddstream = gotRemoteStream;
-
-  if (isOfferer) {
-
-    pc.onnegotiationneeded = function(){
-
-      pc.createOffer(gotLocalDescription, 
-        function(error) { console.log(error) }, 
-        { 'mandatory': { 'OfferToReceiveAudio': true, 'OfferToReceiveVideo': true } }
-      );
-
-    }
-  }
-
 
 }
 
@@ -217,10 +185,40 @@ function startCall(isOfferer){
 
     localVideo.srcObject = mediaStream;
 
-    createOffer(isOfferer);
+    pc = new RTCPeerConnection(configuration);
 
-  })
-  
+    pc.addStream(mediaStream);
+
+    pc.onicecandidate = function (event){
+
+      if (event.candidate) {
+        socket.emit('webrtc_message', {
+          type: 'candidate',
+          label: event.candidate.sdpMLineIndex,
+          id: event.candidate.sdpMid,
+          candidate: event.candidate.candidate
+        });
+      }
+
+    };
+
+    pc.onaddstream = function (event){
+      remoteVideo.srcObject = event.stream
+    };
+
+    if (isOfferer) {
+
+      pc.onnegotiationneeded = function(){
+
+        pc.createOffer().then(gotLocalDescription).catch(function(error){
+          console.log('onnegotiationneeded.error', error)
+        });
+
+      }
+    }
+
+    })
+    
 }
 
 function toggleMicro() {

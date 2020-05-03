@@ -8,7 +8,7 @@ var turnConnectionTestResult = document.getElementById('turnConnectionTestResult
 var checkStunConnectionButton = document.getElementById('checkStunConnectionButton');
 var stunConnectionTestResult = document.getElementById('stunConnectionTestResult');
 
-var userHash
+var userHash;
 
 function initWebscokets() {
 
