@@ -1,9 +1,15 @@
 const express = require('express');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const app = express();
 const port = 3000;
 
+const USER = process.env.USER || 'user';
+const PASSWORD = process.env.PASSWORD || '666666';
 
+console.log("Basic Auth User: " + USER)
+console.log("Basic Auth Password: " + PASSWORD)
 
 app.use(function(req, res, next) {
 
@@ -30,7 +36,7 @@ app.use(function(req, res, next) {
         var username = credentials[0];
         var password = credentials[1];
 
-        if( username === 'user' && password === '666666') {
+        if( username === USER && password === PASSWORD) {
             return next()
         } else {
             res.statusCode = 401; // Force them to retry authentication
@@ -186,6 +192,8 @@ io.sockets.on('connection', function (socket) {
 
 function destroyBrokenRooms(){
 
+	console.log("Looking for broking rooms")
+
 	Object.keys(rooms).forEach(function(key){
 
 		var room = rooms[key]
@@ -200,7 +208,11 @@ function destroyBrokenRooms(){
 
 }
 
+setInterval(function(){
 
+	destroyBrokenRooms();
+
+}, 60 * 1000)
 
 http.listen(port, () => {
   console.info('listening on %d', port);
