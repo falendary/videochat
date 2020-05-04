@@ -176,11 +176,13 @@ function endCall() {
 
 function startCall(isOfferer){
 
-  console.log('Requesting local stream');
+  console.log('Requesting local stream: init');
 
   navigator.getUserMedia(
     { audio: true, video: true }, 
     function onSuccess(data){
+
+      console.log('Requesting local stream: success');
 
       mediaStream = data;
 
@@ -229,6 +231,8 @@ function startCall(isOfferer){
       }
 
   }, function onError(error){
+
+    console.log('Requesting local stream: fail');
 
     alert(error);
 
