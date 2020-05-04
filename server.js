@@ -83,6 +83,11 @@ io.sockets.on('connection', function (socket) {
 
 			socket.broadcast.emit('room_message', message);
 
+			socket.broadcast.emit('lobby_message', {type: 'get_rooms_response', data: {
+				rooms: rooms
+			}});
+
+
 		}
 		
 		if (message.action === 'refresh') {

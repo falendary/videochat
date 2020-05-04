@@ -19,6 +19,7 @@ video {
 }
 
 
+
 .text-center {
     text-align: center;
 }
@@ -42,7 +43,12 @@ video {
     width: 20%;
     left: 10px;
     top: 10px;
-    z-index: 2
+    z-index: 2;
+
+    transform: rotateY(180deg);
+    -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+    -moz-transform:rotateY(180deg); /* Firefox */
+
 }
 
 .remote-video {

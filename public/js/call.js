@@ -188,6 +188,8 @@ function startCall(isOfferer){
 
       localVideo.srcObject = mediaStream;
 
+
+
       pc = new RTCPeerConnection(configuration);
 
       for (const track of mediaStream.getTracks()) {

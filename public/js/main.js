@@ -10,6 +10,10 @@ var stunConnectionTestResult = document.getElementById('stunConnectionTestResult
 
 var userHash;
 
+var audioInterval;
+var audio = document.getElementById('audio')
+
+
 function initWebscokets() {
 
   console.log('initWebscokets');
@@ -25,6 +29,12 @@ function initWebscokets() {
       var rooms = message.data.rooms;
 
       if (Object.keys(rooms).length) {
+
+        audioInterval = setInterval(function(){
+
+          audio.play();
+
+        }, 1000)
 
         var rooms_result_html = '';
 
@@ -65,6 +75,10 @@ function initWebscokets() {
 
       } else {
 
+        clearInterval(audioInterval)
+
+        audio.pause();
+
         roomsHolder.innerHTML = '<p class="text-center">Никто не начал звонка</p>'
 
       }
@@ -86,6 +100,7 @@ function initWebscokets() {
 
 
   })
+
 
   socket.emit('lobby_message', {
       action: 'get_rooms_request'
