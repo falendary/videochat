@@ -28,7 +28,7 @@ server {
 
 		proxy_pass_request_headers on;
 		proxy_set_header authorization $http_authorization;
-                proxy_pass_header  authorization;
+        proxy_pass_header  authorization;
 		proxy_pass http://0.0.0.0:3000;
 		
 	}
