@@ -188,7 +188,9 @@ function startCall(isOfferer){
 
       pc = new RTCPeerConnection(configuration);
 
-      pc.addStream(mediaStream);
+      for (const track of mediaStream.getTracks()) {
+        pc.addTrack(track, mediaStream);
+      }
 
       pc.onicecandidate = function (event){
 
@@ -203,8 +205,8 @@ function startCall(isOfferer){
 
       };
 
-      pc.onaddstream = function (event){
-        remoteVideo.srcObject = event.stream
+      pc.ontrack = function (event){
+        remoteVideo.srcObject = event.streams[0];
       };
 
       if (isOfferer) {
