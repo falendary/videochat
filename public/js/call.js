@@ -14,6 +14,8 @@ navigator.msGetUserMedia;
 var roomHash;
 var userHash;
 
+var showButtons = true;
+
 var configuration = {
   iceServers: [
     { urls: "stun:chat.szch.one:3478"},
@@ -256,7 +258,136 @@ function toggleMicro() {
 
 }
 
+function setLocalDraggableListener(){
+
+    var startX;
+    var startY;
+
+    var lastX;
+    var lastY;
+
+    var currentY;
+    var currentX;
+
+    var resultY;
+    var resultX;
+
+    var mousePressed = false;
+
+    var maxLeft;
+    var maxTop;
+
+    var elem = document.querySelector('.local-video-holder')
+
+    elem.addEventListener('mousedown', function(event){
+
+      // console.log('card mousedown event', event);
+
+      if (event.target.classList.contains('draggable-corner')) {
+
+        startX = event.clientX;
+        startY = event.clientY;
+
+        currentY = parseInt(elem.style.top.split('px')[0], 10);
+        currentX = parseInt(elem.style.left.split('px')[0], 10);
+
+        mousePressed = true;
+
+      }
+
+    })
+
+    document.body.addEventListener('mouseup', function(event) {
+
+      // console.log('mouseup event', event);
+
+      mousePressed = false;
+
+    })
+
+    document.body.addEventListener('mousemove', function(event) {
+
+      // console.log('mousePressed', mousePressed);
+
+      if (mousePressed) {
+
+        // console.log('mousemove event', event);
+
+        lastX = event.clientX;
+        lastY = event.clientY;
+
+        maxLeft = document.body.clientWidth - elem.clientWidth;
+        maxTop = document.body.clientHeight - elem.clientHeight;
+
+        console.log('maxTop', maxTop);
+
+        
+        if (!currentY){
+            currentY = 0
+        }
+
+        if (!currentX){
+            currentX = 0
+        }
+
+        resultY = currentY + lastY - startY
+        resultX = currentX + lastX - startX
+
+        if (resultY < 0) {
+          resultY = 0
+        } 
+
+        if (resultY > maxTop) {
+          resultY = maxTop
+        }
+
+        if (resultX < 0) {
+          resultX = 0
+        } 
+
+        if (resultX > maxLeft) {
+          resultX = maxLeft
+        }
+
+
+        elem.style.top = resultY  + 'px';
+
+        elem.style.left =  resultX + 'px';
+
+       
+      }
+
+    })
+
+}
+
+function setHideButtonsHandler(){
+
+  document.getElementById('hideButtonsButton').addEventListener('click', function(){
+
+    showButtons = !showButtons;
+
+
+    if (showButtons) {
+
+      document.getElementById('endCallButton').style.display = 'block';
+      document.getElementById('toggleMicro').style.display = 'block';
+
+    } else {
+
+      document.getElementById('endCallButton').style.display = 'none';
+      document.getElementById('toggleMicro').style.display = 'none';
+
+    }
+
+  })
+
+}
+
 function init() {
+
+  setLocalDraggableListener();
+  setHideButtonsHandler();
 
   userHash = localStorage.getItem('user_hash')
 

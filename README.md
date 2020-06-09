@@ -48,7 +48,27 @@ $ service nginx restart
 
 ### Создание сертификата Let's Encrypt
 
-...
+Добавим репозиторий
+
+
+```sh
+$ sudo add-apt-repository ppa:certbot/certbot
+```
+
+Установим certbot
+
+```sh
+$ sudo apt install python-certbot-nginx
+```
+
+Получение сертификата
+
+```sh
+$ sudo certbot --nginx -d example.com -d www.example.com
+```
+
+
+
 
 ### Установка Turn/Stun сервера
 
@@ -66,9 +86,11 @@ $ service nginx restart
 -  https://www.youtube.com/watch?v=2Z2PDsqgJP8
 -  https://webrtc.github.io/samples/src/content/peerconnection/pc1/
 -  https://www.red5pro.com/docs/server/turnstun.html
+-  https://www.digitalocean.com/community/tutorials/nginx-let-s-encrypt-ubuntu-18-04-ru
 
 # Задачи
 
+- Добавить возможность перетаскивания локального окна с видео
 - ~~Добавить звуковое уведомление что создалась комната~~
 - ~~Добавить валидацию запросов на сервер/клиентe~~
 - ~~Добавить кнопку проверку соединение с Turn сервером на глвной странице~~

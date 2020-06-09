@@ -8,6 +8,7 @@ body {
     font-family: sans-serif;
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 
 * {
@@ -18,7 +19,45 @@ video {
     width: 100%;
 }
 
+.hide-buttons-button {
+    position: fixed;
+    bottom: 8px;
+    left: 8px;
+    z-index: 2;
+    border: 1px solid #000;
+    background: #fff;
+    outline: none;
+}
+.hide-buttons-button:hover {
+    background: #ddd;
+}
 
+.draggable-corner {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    background: #ddd;
+    z-index: 2;
+    display: none;
+    cursor: move;
+}
+
+.local-video-holder {
+    display: block;
+    position: relative;
+
+    width: 20%;
+    left: 10px;
+    top: 10px;
+    z-index: 2;
+
+}
+
+.local-video-holder:hover .draggable-corner  {
+    display: block;
+}
 
 .text-center {
     text-align: center;
@@ -39,11 +78,6 @@ video {
 }
 
 .local-video {
-    position: absolute;
-    width: 20%;
-    left: 10px;
-    top: 10px;
-    z-index: 2;
 
     transform: rotateY(180deg);
     -webkit-transform:rotateY(180deg); /* Safari and Chrome */
@@ -76,7 +110,7 @@ video {
     text-transform: uppercase;
 }
 .end-call-button {
-    position: absolute;
+    position: fixed;
     bottom: 20px;
     left: 50%;
     font-size: 20px;
@@ -87,7 +121,7 @@ video {
 }
 
 .toggle-micro-button {
-    position: absolute;
+    position: fixed;
     bottom: 80px;
     padding: 10px;
     width: 300px;
