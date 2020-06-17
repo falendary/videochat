@@ -178,10 +178,14 @@ function endCall() {
 
 function startCall(isOfferer){
 
+  // hardcoded HD quality
+  var config = { audio: true, video: {width: {exact: 1280}, height: {exact: 720}} }
+
   console.log('Requesting local stream: init');
+  console.log('Requesting local stream: config', config);
 
   navigator.getUserMedia(
-    { audio: true, video: true }, 
+    config, 
     function onSuccess(data){
 
       console.log('Requesting local stream: success');
@@ -414,6 +418,16 @@ function init() {
     location.href = '/'
 
   }
+
+  remoteVideo.addEventListener('loadedmetadata', function() {
+    console.log('Remote video videoWidth: ' + this.videoWidth +
+      'px,  videoHeight: ' + this.videoHeight + 'px');
+  });
+
+  remoteVideo.onresize = function() {
+    console.log('Remote video size changed to ' +
+      remoteVideo.videoWidth + 'x' + remoteVideo.videoHeight);
+  };
 
 }
 

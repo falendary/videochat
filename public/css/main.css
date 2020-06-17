@@ -82,6 +82,7 @@ video {
     transform: rotateY(180deg);
     -webkit-transform:rotateY(180deg); /* Safari and Chrome */
     -moz-transform:rotateY(180deg); /* Firefox */
+    object-fit: cover;
 
 }
 
@@ -91,6 +92,7 @@ video {
     position: absolute;
     left: 0;
     top: 0;
+    object-fit: cover;
 }
 
 .start-button {
