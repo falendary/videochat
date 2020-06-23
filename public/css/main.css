@@ -27,9 +27,19 @@ video {
     border: 1px solid #000;
     background: #fff;
     outline: none;
+    height: 20px;
 }
 .hide-buttons-button:hover {
     background: #ddd;
+}
+
+.time-holder {
+    position: fixed;
+    left: 39px;
+    border: 1px solid #000;
+    background: #fff;
+    bottom: 8px;
+    padding: 0 4px;
 }
 
 .draggable-corner {

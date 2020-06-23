@@ -5,6 +5,8 @@ var socket;
 var endCallButton = document.getElementById('endCallButton');
 var toggleMicroButton = document.getElementById('toggleMicro');
 
+var timeHolder = document.getElementById('timeHolder');
+
 var localVideo = document.getElementById('localVideo');
 var remoteVideo = document.getElementById('remoteVideo');
 
@@ -388,10 +390,47 @@ function setHideButtonsHandler(){
 
 }
 
+var totalSeconds = 0;
+
+function updateTimer(startTime){
+
+  var result;
+
+  totalSeconds = totalSeconds + 1;
+
+  var minutes = Math.floor(totalSeconds / 60);
+
+  if (minutes < 1) {
+    minutes = 0;
+  }
+
+  var seconds = totalSeconds - (minutes * 60)
+
+  if (minutes < 10) {
+    minutes = '0' + minutes.toString(); 
+  }
+
+  if (seconds < 10) {
+    seconds = '0' + seconds.toString();
+  }
+
+  timeHolder.innerHTML = minutes + ':' + seconds;
+
+}
+
+function startTimer(){
+
+    updateTimer();
+    var timeout = setInterval(updateTimer, 1000)
+
+
+}
+
 function init() {
 
   setLocalDraggableListener();
   setHideButtonsHandler();
+  startTimer();
 
   userHash = localStorage.getItem('user_hash')
 
